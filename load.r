@@ -38,3 +38,6 @@ filter_unreasonable_ngrams <- function(ngrams) {
 #Run the filter_unreasonable_ngrams function
 fix_grams <- filter_unreasonable_ngrams(every_grams)
 head(fix_grams)
+
+#Save the data
+write.csv(fix_grams, file = "out/every_ngram_fix.csv")
