@@ -4,8 +4,22 @@ library(XML)
 library(tidyr)
 library(stringr)
 library(magrittr)
+library(plyr)
 library(dplyr)
 library(RWeka)
+
+#Remove non-words from the raw icc texts
+get_real_words <- function(word) {
+  word[!stringr::str_detect(word, "[^a-z ]")]
+}
+
+#' Remove unreasonable n-grams containing characters other than letters and spaces
+#' @param ngrams A list of n-grams
+#' @return Returns a list of filtered n-grams
+filter_unreasonable_ngrams <- function(ngrams) {
+  require(stringr)
+  ngrams[!str_detect(ngrams, "[^a-z ]")]
+}
 
 #load OCR'd ICC Deceisions data into R
 icc_dir <- "text"
@@ -16,30 +30,26 @@ names(raw) <- files
 icc_texts <- lapply(raw, paste, collapse = " ") %>%
   lapply(., tolower) %>%
   lapply(., WordTokenizer) %>%
-  lapply(., get_real_words)
-
-
-  iclapply(., paste, collapse = " ")
+  lapply(., get_real_words) %>%
+  lapply(., paste, collapse = " ")
 
 #Create an N-gram maker with Rweka's function
-ngrammify <- function(data, n) { 
-  NGramTokenizer(data, Weka_control(min = n, max = n))
-}
+#ngrammify <- function(data, n) { 
+ # NGramTokenizer(data, Weka_control(min = n, max = n))
+#}
 
 #Turn text list into N-grams, in this case 5-grams
 #icc_grams <- lapply(icc_texts, ngrammify, 5)
 #every_grams <- icc_grams %>% unlist() %>% unique()
 
+icc.df <- ldply(icc_texts)
+decisions <- rename(icc.df, c(".id" = "id",
+                            "V1" = "text"))
 
-
-#Remove non-words from the raw icc texts
-get_real_words <- function(word) {
-  word[!stringr::str_detect(word, "[^a-z ]")]
-}
 
 #Run the filter_unreasonable_ngrams function
-fix_grams <- filter_unreasonable_ngrams(icc_texts)
-head(fix_grams)
+#fix_grams <- filter_unreasonable_ngrams(icc_grams)
+#head(fix_grams)
 
 #Save the data
-#write.csv(icc_texts, file = "out/icc_texts.csv")
+write.csv(icc.df, file = "out/icc_texts.csv")
