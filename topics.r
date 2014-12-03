@@ -73,6 +73,7 @@ for(i in 1:40){
                   topic.top.words$weights,
                   c(4,.8), rot.per=0,
                   random.order=F))
+  
 }
 dev.off()
 
