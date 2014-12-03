@@ -9,9 +9,23 @@ library(magrittr)
 
 table_dir <- "table"
 files <- dir(table_dir, "*.html")
-tbls <- file.path(table_dir, files) %>%
-  lapply(., htmlParse)
-tb.df <- readHTMLTable(tbls, head = FALSE, stringsAsFactors = FALSE, which = 4)
+tbls <- file.path(table_dir, files) 
+tbls <- lapply(tbls, htmlParse) %>%
+  lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 4)
+
+#According to Hadley Wickham, creating an empty dataset and populating it is drastically faster in R
+tbl.df <- data.frame((character(length = length(tbls))), stringsAsFactors = FALSE)
+
+#iterate through the list of tables and parse the html structure
+i <- NULL
+for(i in 1:length(tbls)){
+  
+  i.df <- readHTMLTable(tbls[i], head = FALSE, stringsAsFactors = FALSE)
+  tbl.df <- cbind(tbl.df, i.df)
+
+}
+
+readHTMLTable(tbls[1])
 
 stopwords <- unique(tbls)
 
