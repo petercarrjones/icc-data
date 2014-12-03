@@ -42,9 +42,13 @@ icc_texts <- lapply(raw, paste, collapse = " ") %>%
 #icc_grams <- lapply(icc_texts, ngrammify, 5)
 #every_grams <- icc_grams %>% unlist() %>% unique()
 
+#attach the 
 icc.df <- ldply(icc_texts)
-decisions <- rename(icc.df, c(".id" = "id",
-                            "V1" = "text"))
+
+#have to use the old plyr package- currently a bug in dplyr with rename_ function- but it creates the correct data.frame all the same
+decisions <- icc.df %>%
+                    plyr::rename(c(".id" = "id",
+                          "V1" = "text"))
 
 
 #Run the filter_unreasonable_ngrams function
