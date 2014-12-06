@@ -18,8 +18,10 @@ OCR_OUTPUTS := $(patsubst pdf/%.pdf, text/%.txt, $(wildcard pdf/*.pdf))
 ocr : $(OCR_OUTPUTS)
 	@echo "\nDone doing OCR for all the PDFs in ./pdf"
 
+
+
 temp/%.txt : pdf/%.pdf
-	mkdir -p temp
+	mkdir -p temp text
 	@echo "\nBursting $^ into separate files"
 	pdftk $^ burst output temp/$*.page-%04d.pdf
 	@echo "\nConverting the PDFs for $^ to the image files"
@@ -36,13 +38,13 @@ temp/%.txt : pdf/%.pdf
 text/%.txt : temp/%.txt
 	awk -vRS="-\n+" -vORS="" '1' $^ > $@
 
-.PHONY : clean
-clean : 
+.PHONY: clean
+clean: 
 	rm -rf temp/
 	rm -rf pdf/
 
-.PHONY : clobber
-clobber : 
+.PHONY: clobber
+clobber: 
 	rm -rf text/*
 
 
