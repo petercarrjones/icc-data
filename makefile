@@ -8,7 +8,7 @@ wgeturl:
 	@echo "\nDownloading ICC Decisions"
 	@wget -r -N --no-parent -w 1 --limit-rate=100k http://digital.library.okstate.edu/icc/
 
-transfer: pdf/%.pdf
+transfer: 
 	mkdir -p pdf
 	@echo "\nCollecting Decisions"
 		find digital.library.okstate.edu/ -iname "iccv*.pdf" -exec cp {} ./pdf \;
