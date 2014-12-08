@@ -121,4 +121,4 @@ print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))))
 }  
 dev.off()
 
-ggplot(doc_topics, aes(x=docs, y=X30)) + geom_smooth() + geom_line()
+ggplot(doc_topics, aes(x=docs, y=X30)) + geom_smooth(span = 20)
