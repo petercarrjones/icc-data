@@ -7,17 +7,20 @@ library(XML)
 library(dplyr)
 library(magrittr)
 
+#Loads all the html tables into one list
 table_dir <- "table"
 files <- dir(table_dir, "*.html")
 tbls <- file.path(table_dir, files) 
 tbls <- lapply(tbls, htmlParse) %>%
-  lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 4)
+  lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 1) %>%
+  lapply(., )
 
+#Currently This code isn't necessary #/
 #According to Hadley Wickham, creating an empty dataset and populating it is drastically faster in R
-tbl.df <- data.frame((character(length = length(tbls))), stringsAsFactors = FALSE)
+"tbl.df <- data.frame((character(length = length(tbls))), stringsAsFactors = FALSE)
 
 #iterate through the list of tables and parse the html structure
-i <- NULL
+i <- 1
 for(i in 1:length(tbls)){
   
   i.df <- readHTMLTable(tbls[i], head = FALSE, stringsAsFactors = FALSE)
@@ -27,15 +30,16 @@ for(i in 1:length(tbls)){
 
 readHTMLTable(tbls[1])
 
-stopwords <- unique(tbls)
 
+stopwords <- unique(tbls)
+"
 #Parse a sample table, this is the path
 doc <-"table/v02toc.html"
 
 #Pull in html files
 p <- htmlParse(doc)
 
-
+ 
 
 #iccv02toc.df <- xmlToDataFrame(p, collectNames = FALSE, stringsAsFactors = FALSE, nodes= iccv02toc[4] )
 
