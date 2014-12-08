@@ -10,10 +10,15 @@ library(magrittr)
 #Loads all the html tables into one list
 table_dir <- "table"
 files <- dir(table_dir, "*.html")
-tbls <- file.path(table_dir, files) 
-tbls <- lapply(tbls, htmlParse) %>%
-  lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 1) %>%
-  lapply(., )
+tbls <- file.path(table_dir, files) %>%
+  lapply(., htmlParse) %>%
+  lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 1) 
+
+all_tbls <- do.call(rbind, tbls)
+#   lapply(., )
+
+tbls %>%
+  lapply(``[[`) %>%
 
 #Currently This code isn't necessary #/
 #According to Hadley Wickham, creating an empty dataset and populating it is drastically faster in R
@@ -52,7 +57,13 @@ iccv02toc.df <- as.data.frame(iccv02toc[4], stringsAsFactors = FALSE)
 #First is to move plaintiff tribe into a separate column.
 #iccv02toc.df$table1.V2 <- str_replace_all(iccv02toc.df$table1.V2, "[\t]", "")
 
-v02tocfinal.df <- mutate(iccv02toc.df, tribe = str_extract(iccv02toc.df$table1.V2, ".*\r\n"))
+v02tocfinal.df <- 
+  iccv02toc.df %>%
+  mutate(tribe = str_match(table1.V2, "(.*?)\r\n")[,2]) %>%
+  
+  View()
+
+
 v02tocfinal.df <- mutate(v02tocfinal.df, page1 = str_extract(v02tocfinal.df$table1.V3, ".*\r\n"))
 
 
