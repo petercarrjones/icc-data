@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-all: wgeturl transfer ocr transfer
+all: wgeturl transfer ocr
 .Phony: all
 
 
