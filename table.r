@@ -19,24 +19,33 @@ tbls <- file.path(table_dir, files) %>%
   lapply(., htmlParse) %>%
   lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 1) 
 
+#bind the tables together into one large table with 3 columns
 all_tbls <- do.call(rbind, tbls)
 
+#Process the text in column to remove non-characters
 tbls_words<- gsub("\r", " ", all_tbls$V2)
 tbls_words<- gsub("\t", " ", tbls_words) 
 tbls_words<- gsub("\n", " ", tbls_words)
 tbls_words<- gsub(",", " ", tbls_words)
+#Turn into a list -should refactor to do this before then lapply()
 tblwords.ls <- list(tbls_words)
-tblwords.ls <- lapply(tblwords.ls, paste, collapse= " ") %>%
+#Create lower-case word-token strings with no punctuation
+tblwords.ls <- lapply(tbwords.ls, paste, collapse= " ") %>%
   lapply(., tolower) %>%
   lapply(., WordTokenizer) %>%
   lapply(., get_real_words) %>%
   lapply(., unique)
-stopwords<- strsplit(" ", tbls_words)
-stopwords <- unique(tblswords[1])
+#unlist into character vector
+tblword.ch <- unlist(tblwords.ls)
 
+#concatenate new words onto old stoplist (mallet's standard english stopwords with some icc-centric words)
+cat(tblword.ch, file= "icc.txt", sep="\n", append = TRUE)
+#load old list
+stopwords<- scan(file="icc.txt", what= "character", sep="\n")
+#Keep only the unique words in the stop list and re-save
+stopwords <- unique(stopwords)
+cat(stopwords, file="icc.txt", sep="\n", append = FALSE)
 
-tbls %>%
-  lapply(``[[`) %>%
 
 #Currently This code isn't necessary #/
 #According to Hadley Wickham, creating an empty dataset and populating it is drastically faster in R
