@@ -7,6 +7,11 @@ library(XML)
 library(dplyr)
 library(magrittr)
 
+#function to clean up character vectors- removes punctuation.
+get_real_words <- function(word) {
+  word[!stringr::str_detect(word, "[^a-z ]")]
+}
+
 #Loads all the html tables into one list
 table_dir <- "table"
 files <- dir(table_dir, "*.html")
@@ -15,7 +20,20 @@ tbls <- file.path(table_dir, files) %>%
   lapply(., readHTMLTable, head = FALSE, stringsAsFactors = FALSE, which = 1) 
 
 all_tbls <- do.call(rbind, tbls)
-#   lapply(., )
+
+tbls_words<- gsub("\r", " ", all_tbls$V2)
+tbls_words<- gsub("\t", " ", tbls_words) 
+tbls_words<- gsub("\n", " ", tbls_words)
+tbls_words<- gsub(",", " ", tbls_words)
+tblwords.ls <- list(tbls_words)
+tblwords.ls <- lapply(tblwords.ls, paste, collapse= " ") %>%
+  lapply(., tolower) %>%
+  lapply(., WordTokenizer) %>%
+  lapply(., get_real_words) %>%
+  lapply(., unique)
+stopwords<- strsplit(" ", tbls_words)
+stopwords <- unique(tblswords[1])
+
 
 tbls %>%
   lapply(``[[`) %>%
