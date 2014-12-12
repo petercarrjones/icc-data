@@ -6,6 +6,10 @@ The Indian Claims Commission was a legal body that adjudicated hundreds of claim
 This analysis collected the the Decisions from [Oklahoma State University:](http://digital.library.okstate.edu/icc/index/iccindex.htm)
 Performed OCR of the PDFs using tesseract and Lincoln Mullen's make recipe from [Civil-Procedure-Codes](https://github.com/lmullen/civil-procedure-codes)
 
-The rest of the work is various R scripts that process and analyze the textural data. It was created as a final class project for CLIO3: Hist 698 at George Mason University
+Use the Makefile to perform each of the tasks- download, collect PDFs, OCR, collect tables/plaintiff tribes. I'd highly recommend running the OCR in parallel using `make ocr -j2`
 
-Visualizations to come at [Petercarrjones.com](http://www.petercarrjones.com/)
+The rest of the work is various R scripts that process and analyze the textural data. Use load.r and topic.r to perform the work. Table.r is a script to collect the plaintiff tribe names for the stoplist. Best practice is to use the curated stoplist on github as manual changes have been made to it.
+
+It was created as a final class project for CLIO3: Hist 698 at George Mason University.
+
+Visualizations at [Petercarrjones.com](http://www.petercarrjones.com/projects/mining-the-icc/)
