@@ -70,7 +70,9 @@ plotdocs <- names(topic_docs)
 names(topic_docs) <- decisions$id
 
 ## cluster based on shared words
-plot(hclust(dist(topic.words)), labels=topics.labels)
+jpeg(filename="topic-hcluster.jpeg", width = 960, height = 600, )
+print(plot(hclust(dist(topic.words)), labels=topics.labels))
+dev.off()
 
 #' Calculate similarity matrix
 #' Shows which documents are similar to each other
@@ -110,18 +112,42 @@ doc_topics$docs <- cols
 topic.cols <- names(doc_topics)
 
 for(i in 1:40){
-print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))) + ggtitle(c("Topic " + as.character(i))))
+print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))) + xlab("ICC Decisions in Order"))
 
 }  
 dev.off()
 
-print(ggplot(doc_topics, aes(x=docs, y=X30), title = c("Topic " + "30")) + geom_smooth()
+#print(ggplot(doc_topics, aes(x=docs, y=X30), title = c("Topic " + "30")) + geom_smooth()
 
       #Create a term document matrix to plot word similarities
       library(tm)
       library(igraph)
 corpus<- Corpus(VectorSource(decisions$text))
+corpus<- tm_map(corpus, removeWords, stopwords("english"))
 icc.tdm <- TermDocumentMatrix(corpus)
 clean.tdm <- removeSparseTerms(icc.tdm, .995)     
-plot(clean.tdm, terms = findFreqTerms(tdm, lowfreq = 6)[1:25], corThreshold = 0.5)
+#plot(clean.tdm, terms = findFreqTerms(tdm, lowfreq = 6)[1:25], corThreshold = 0.5) #need Rgraphviz, only for R 3.1
 
+toi <- "history" # term of interest
+corlimit <- 0.44 #  lower correlation bound limit.
+expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
+                      terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
+expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
+
+jpeg(filename="wordsim-history.jpeg", width=900, height = 800)
+ggplot(expert_0.7, aes( y = terms  ) ) +
+  geom_point(aes(x = corr), data = expert_0.7) +
+  xlab(paste0("Correlation with the term ", "\"", toi, "\""))
+dev.off()
+
+toi <- "award" # term of interest
+corlimit <- 0.36 #  lower correlation bound limit.
+expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
+                         terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
+expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
+
+jpeg(filename="wordsim-award.jpeg", width=900, height = 800)
+ggplot(expert_0.7, aes( y = terms  ) ) +
+  geom_point(aes(x = corr), data = expert_0.7) +
+  xlab(paste0("Correlation with the term ", "\"", toi, "\""))
+dev.off()
