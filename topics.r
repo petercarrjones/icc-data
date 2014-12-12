@@ -83,17 +83,10 @@ topic_df_dist <- as.matrix(daisy(t(topic_docs), metric = "euclidean", stand = TR
 # that's difficult to interpret (hat-tip: http://stackoverflow.com/a/16047196/1036500)
 topic_df_dist[ sweep(topic_df_dist, 1, (apply(topic_df_dist,1,min) + apply(topic_df_dist,1,sd) )) > 0 ] <- 0
 
-#' Use kmeans to identify groups of similar authors
 
-km <- kmeans(topic_df_dist, n.topics)
-# get names for each cluster
-allnames <- vector("list", length = n.topics)
-for(i in 1:n.topics){
-  allnames[[i]] <- names(km$cluster[km$cluster == i])
-}
 
 #Shawn Graham's topics as wordclouds with some of Jockers print to pdf code
-pdf(file="icc-topics.pdf")
+jpeg(filename="out/images/icc-topic-%03d.jpeg")
 for(i in 1:40){
   topic.top.words <- mallet.top.words(topic.model,
                                       topic.words[i,], 15)
@@ -108,7 +101,7 @@ dev.off()
 #create some plots of topics across the range of decisions
 library(ggplot2)
 library(tidyr)
-pdf(file="icc-topics-across-docs.pdf")
+jpeg(filename="out/images/icc-topics-across-docs-%03d.jpeg")
 n.decisions <- length(raw)
 cols <- 1:n.decisions
 doc_topics <- data.frame(doc.topics, row.names = decisions$id, stringsAsFactors = FALSE)
@@ -116,10 +109,19 @@ doc_topics$docs <- cols
 
 topic.cols <- names(doc_topics)
 
-for(i in 1:100){
-print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))))
+for(i in 1:40){
+print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))) + ggtitle(c("Topic " + as.character(i))))
 
 }  
 dev.off()
 
-ggplot(doc_topics, aes(x=docs, y=X30)) + geom_smooth(span = 20)
+print(ggplot(doc_topics, aes(x=docs, y=X30), title = c("Topic " + "30")) + geom_smooth()
+
+      #Create a term document matrix to plot word similarities
+      library(tm)
+      library(igraph)
+corpus<- Corpus(VectorSource(decisions$text))
+icc.tdm <- TermDocumentMatrix(corpus)
+clean.tdm <- removeSparseTerms(icc.tdm, .995)     
+plot(clean.tdm, terms = findFreqTerms(tdm, lowfreq = 6)[1:25], corThreshold = 0.5)
+
