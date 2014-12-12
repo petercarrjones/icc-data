@@ -1,17 +1,20 @@
 SHELL = /bin/sh
 
-all: wgeturl transfer ocr
 .Phony: all
-
+all: wgeturl transtxt transhtml ocr
 
 wgeturl: 
 	@echo "\nDownloading ICC Decisions"
 	@wget -r -N --no-parent -w 1 --limit-rate=100k http://digital.library.okstate.edu/icc/
 
-transfer: 
-	mkdir -p pdf
-	@echo "\nCollecting Decisions"
+transtxt: 
+		mkdir -p pdf
+		@echo "\nCollecting Decisions"
 		find digital.library.okstate.edu/ -iname "iccv*.pdf" -exec cp {} ./pdf \;
+transhtml:	
+	mkdir -p table
+	@echo "\nCollecting Tables"
+		find digital.library.okstate.edu/ -iname "v*.html" -exec cp {} ./table \;
 
 OCR_OUTPUTS := $(patsubst pdf/%.pdf, text/%.txt, $(wildcard pdf/*.pdf))
 
