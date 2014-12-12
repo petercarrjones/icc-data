@@ -109,7 +109,8 @@ dev.off()
 library(ggplot2)
 library(tidyr)
 pdf(file="icc-topics-across-docs.pdf")
-cols <- 1:2502
+n.decisions <- length(raw)
+cols <- 1:n.decisions
 doc_topics <- data.frame(doc.topics, row.names = decisions$id, stringsAsFactors = FALSE)
 doc_topics$docs <- cols
 
