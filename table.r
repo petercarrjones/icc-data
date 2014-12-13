@@ -62,9 +62,8 @@ for(i in 1:length(tbls)){
 
 readHTMLTable(tbls[1])
 
-
-stopwords <- unique(tbls)
 "
+
 #Parse a sample table, this is the path
 doc <-"table/v02toc.html"
 
@@ -94,6 +93,6 @@ v02tocfinal.df <-
 v02tocfinal.df <- mutate(v02tocfinal.df, page1 = str_extract(v02tocfinal.df$table1.V3, ".*\r\n"))
 
 
-
+#review and save to file
 str(iccv02toc)
 write.csv(iccv02toc[4], file = "out/iccv02toc.csv")

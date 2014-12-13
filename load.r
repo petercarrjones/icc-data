@@ -49,7 +49,7 @@ icc.df <- ldply(icc_texts)
 decisions <- icc.df %>%
                     plyr::rename(c(".id" = "id",
                           "V1" = "text"))
-
+#decisions will be the variable used in topics.r, do not clear environment before loading topics.r
 
 #Run the filter_unreasonable_ngrams function
 #fix_grams <- filter_unreasonable_ngrams(icc_grams)
