@@ -42,7 +42,7 @@ icc_texts <- lapply(raw, paste, collapse = " ") %>%
 #icc_grams <- lapply(icc_texts, ngrammify, 5)
 #every_grams <- icc_grams %>% unlist() %>% unique()
 
-#attach the 
+#attach the texts to a data.frame instead of list.
 icc.df <- ldply(icc_texts)
 
 #have to use the old plyr package- currently a bug in dplyr with rename_ function- but it creates the correct data.frame all the same
