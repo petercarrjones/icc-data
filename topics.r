@@ -2,17 +2,17 @@
 #Much of this initial workflow is from Jockers Text Analysis for R 
 #and Shawn Graham's Ferguson Grand Jury corpus topic model at https://github.com/shawngraham/ferguson
 library(mallet)
-library(wordcloud)
+library(wordcloud2)
 library(dplyr)
 library(tm)
 library(Hmisc)
 
 # import the OCR'd ICC decisions from the text folder
 # each decision is here its own text file
-#decisions <- mallet.read.dir("text") 
+decisions <- mallet.read.dir("text") 
 
 #Better is to use load.r file to provide cleaner texts via get_real_words function, etc
-
+#Update: OKstate has now changed their icc file structure, not allowing wget downloading. Use the raw txt files of the decisions and skip load.r
 mallet.instances <- mallet.import(decisions$id, decisions$text, "icc.txt", token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 
 #' create topic trainer object
@@ -89,10 +89,10 @@ topic_df_dist[ sweep(topic_df_dist, 1, (apply(topic_df_dist,1,min) + apply(topic
 
 #Shawn Graham's topics as wordclouds with some of Jockers print to pdf code
 jpeg(filename="out/images/icc-topic-%03d.jpeg")
-for(i in 1:40){
+for(i in 1:100){
   topic.top.words <- mallet.top.words(topic.model,
                                       topic.words[i,], 15)
-  print(wordcloud(topic.top.words$words,
+  print(wordcloud2(data = topic.top.words$words,
                   topic.top.words$weights,
                   c(4,.8), rot.per=0,
                   random.order=F))
@@ -111,7 +111,7 @@ doc_topics$docs <- cols
 
 topic.cols <- names(doc_topics)
 
-for(i in 1:40){
+for(i in 1:100){
 print(ggplot(doc_topics) + geom_smooth(aes_string(x="docs", y=(topic.cols[i]))) + xlab("ICC Decisions in Order"))
 
 }  
@@ -119,35 +119,35 @@ dev.off()
 
 #print(ggplot(doc_topics, aes(x=docs, y=X30), title = c("Topic " + "30")) + geom_smooth()
 
-      #Create a term document matrix to plot word similarities
-      library(tm)
-      library(igraph)
-corpus<- Corpus(VectorSource(decisions$text))
-corpus<- tm_map(corpus, removeWords, stopwords("english"))
-icc.tdm <- TermDocumentMatrix(corpus)
-clean.tdm <- removeSparseTerms(icc.tdm, .995)     
+      ##Create a term document matrix to plot word similarities
+      # library(tm)
+      # library(igraph)
+# corpus<- Corpus(VectorSource(decisions$text))
+# corpus<- tm_map(corpus, removeWords, stopwords("english"))
+# icc.tdm <- TermDocumentMatrix(corpus)
+# clean.tdm <- removeSparseTerms(icc.tdm, .995)     
 #plot(clean.tdm, terms = findFreqTerms(tdm, lowfreq = 6)[1:25], corThreshold = 0.5) #need Rgraphviz, only for R 3.1
 
-toi <- "history" # term of interest
-corlimit <- 0.44 #  lower correlation bound limit.
-expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
-                      terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
-expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
+# toi <- "history" # term of interest
+# corlimit <- 0.44 #  lower correlation bound limit.
+# expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
+                      # terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
+# expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
 
-jpeg(filename="wordsim-history.jpeg", width=900, height = 800)
-ggplot(expert_0.7, aes( y = terms  ) ) +
-  geom_point(aes(x = corr), data = expert_0.7) +
-  xlab(paste0("Correlation with the term ", "\"", toi, "\""))
-dev.off()
+# jpeg(filename="wordsim-history.jpeg", width=900, height = 800)
+# ggplot(expert_0.7, aes( y = terms  ) ) +
+  # geom_point(aes(x = corr), data = expert_0.7) +
+  # xlab(paste0("Correlation with the term ", "\"", toi, "\""))
+# dev.off()
 
-toi <- "award" # term of interest
-corlimit <- 0.36 #  lower correlation bound limit.
-expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
-                         terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
-expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
+# toi <- "award" # term of interest
+# corlimit <- 0.36 #  lower correlation bound limit.
+# expert_0.7 <- data.frame(corr = findAssocs(icc.tdm, toi, corlimit)[,1],
+                         # terms = row.names(findAssocs(icc.tdm, toi, corlimit)))
+# expert_0.7$terms <- factor(expert_0.7$terms ,levels = expert_0.7$terms)
 
-jpeg(filename="wordsim-award.jpeg", width=900, height = 800)
-ggplot(expert_0.7, aes( y = terms  ) ) +
-  geom_point(aes(x = corr), data = expert_0.7) +
-  xlab(paste0("Correlation with the term ", "\"", toi, "\""))
-dev.off()
+# jpeg(filename="wordsim-award.jpeg", width=900, height = 800)
+# ggplot(expert_0.7, aes( y = terms  ) ) +
+  # geom_point(aes(x = corr), data = expert_0.7) +
+  # xlab(paste0("Correlation with the term ", "\"", toi, "\""))
+# dev.off()
